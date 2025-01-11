@@ -1,23 +1,22 @@
-import { createClient } from '@/lib/supabase/server'
+import React from 'react'
 import { format } from 'date-fns';
-import { SharedLink } from "@/components/SharedLink";
-import { Footer } from '@/components/Footer';
-import { getCurrentUser } from './actions';
+
+import { getCurrentUser } from '../actions';
 import { getLinks } from '@/lib/actions/links';
 
-export default async function Home() {
-  const user = await getCurrentUser();
+import { SharedLink } from "@/components/SharedLink";
+import { Footer } from '@/components/Footer';
+
+
+export default async function Latest() {
+    const user = await getCurrentUser();
   const userId = user?.id || null;
 
   const { data, error } = await getLinks(userId);
 
-  // order the results by total points
-  const orderedData = data?.sort((a, b) => (b.upvotes[0]?.count - b.downvotes[0]?.count) - (a.upvotes[0]?.count - a.downvotes[0]?.count));
-
   return (
     <main className="bg-icterine dark:bg-cinder min-w-screen min-h-screen">
-      {orderedData && orderedData.map((link) => {
-        return (
+      {data && data.map((link) => (
         <SharedLink
           key={link.id}
           id={link.id}
@@ -34,7 +33,7 @@ export default async function Home() {
           title={link.title}
           url={link.link}
         />
-      )})}
+      ))}
 
       <div className="border-t-2 border-t-cinder py-8 pl-leftGutter text-black dark:border-t-icterine dark:text-icterine">
         <Footer />
